@@ -1,0 +1,13 @@
+Summary of each individual train models are as follows;
+
+Model                           Best Score
+--------------------            --------------------
+Gaussian Naive Bayes            76.63
+Logistic Regression             82.7
+Ridge Classification            82.47
+Linear Discriminant Analysis    82.67
+K Neighbors Classification      83.82
+Support Vector Classification   84.05
+Random Forest Classification    83.37
+Ada Boost Classification        82.58
+Gradient Boosting Classifier    83.15
