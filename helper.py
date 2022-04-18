@@ -89,7 +89,7 @@ def organize_features(data_set):
 
     # Fare - categorized into 4 groups base on quartile ranges
     print("\tAdd 'Fare_bin'")
-    data_set['Fare_bin'] = pd.cut(data_set['Fare'], bins=[0, 7.91, 14.45, 31, 120],
+    data_set['Fare_bin'] = pd.cut(data_set['Fare'], bins=[0, 7.91, 14.45, 31, 513],
                                   labels=['Low_fare', 'median_fare', 'Average_fare', 'high_fare'])
 
     # Add number of cabins a passenger had

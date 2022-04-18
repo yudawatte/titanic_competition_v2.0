@@ -30,44 +30,47 @@ evaluate_model(gbc, 'Gradient Boosting Classifier', X_train, y_train, 0.3)
 # Fine-tuning model with GridSearch
 print("\nFine tuning model")
 gbc = GradientBoostingClassifier()
+
+# First do a high level tune-up with RandomizedSearchCV
 """param_grid = {
     'loss': ['deviance', 'exponential'],
     'learning_rate':[0.001, 0.01, 0.1, 1],
     'n_estimators': [450, 500, 550, 600,650],
-    #'criterion':['friedman_mse', 'squared_error'],
-    'criterion':['friedman_mse'],
-    #'min_samples_split':[2, 3],
-    'min_samples_split':[2],
-    #'min_samples_leaf':[2, 3],
-    'min_samples_leaf':[3],
+    'criterion':['friedman_mse', 'squared_error'],
+    #'criterion':['friedman_mse'],
+    'min_samples_split':[2, 3],
+    #'min_samples_split':[2],
+    'min_samples_leaf':[2, 3],
+    #'min_samples_leaf':[3],
     #'max_depth': [15, 20, 25],
     'max_depth': [20, 25, 30, 35],
-    #'max_features':['auto', 'sqrt', 'log2', None]
-    'max_features':['auto']
+    'max_features':['auto', 'sqrt', 'log2', None]
+    #'max_features':['auto']
 }
 clf_gbc = RandomizedSearchCV(gbc, param_distributions=param_grid, cv=5, verbose=True, n_jobs=-1)
 best_clf_gbc = clf_gbc.fit(X_train, y_train.values.ravel())
 clf_performance(best_clf_gbc, "Gradient Boosting Classifier")"""
 
 """
-Best Score:	 0.8292134831460674
-Best Parameters:	 {'n_estimators': 550, 
-                      'min_samples_split': 2, 
+Gradient Boosting Classifier
+Best Score:	 0.8224719101123595
+Best Parameters:	 {'n_estimators': 650, 
+                      'min_samples_split': 3, 
                       'min_samples_leaf': 3, 
-                      'max_features': 'sqrt', 
-                      'max_depth': 25, 
+                      'max_features': 'log2', 
+                      'max_depth': 20, 
                       'loss': 'exponential', 
-                      'learning_rate': 0.01, 
-                      'criterion': 'friedman_mse'}
+                      'learning_rate': 0.001, 
+                      'criterion': 'squared_error'}
 """
 param_grid = {'loss': ['exponential'],
-              'learning_rate': np.arange(0.01, 0.02, 0.001),
-              'n_estimators': np.arange(540,560, 1),
-              'criterion':['friedman_mse'],
-              'min_samples_split':[2],
-              'min_samples_leaf':[3],
-              'max_depth': np.arange(23, 27, 1),
-              'max_features':['sqrt']}
+              'learning_rate': np.arange(0.0005, 0.0015, 0.0001),
+              'n_estimators': np.arange(640,660, 1),
+              'criterion':['squared_error'],
+              'min_samples_split':[2,3],
+              'min_samples_leaf':[2,3],
+              'max_depth': np.arange(15, 25, 1),
+              'max_features':['sqrt', 'log2']}
 clf_gbc = GridSearchCV(gbc, param_grid=param_grid, cv=5, verbose=True, n_jobs=-1)
 best_clf_gbc = clf_gbc.fit(X_train, y_train.values.ravel())
 clf_performance(best_clf_gbc, "Gradient Boosting Classifier")
@@ -95,11 +98,11 @@ Best Score:	 0.8314606741573034
 Best Parameters:	 {'criterion': 'friedman_mse', 
                       'learning_rate': 0.01, 
                       'loss': 'exponential', 
-                      'max_depth': 23, 
+                      'max_depth': 25, 
                       'max_features': 'sqrt', 
                       'min_samples_leaf': 3, 
                       'min_samples_split': 2, 
-                      'n_estimators': 540}
+                      'n_estimators': 548}
 """
 
 

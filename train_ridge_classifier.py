@@ -5,8 +5,9 @@ from sklearn.linear_model import RidgeClassifier
 from helper import read_data, save_data, save_model
 from settings import Settings
 from model_evaluator import evaluate_model, clf_performance
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 import pandas as pd
+import numpy as np
 
 # Read preprocessed data
 sett = Settings()
@@ -29,9 +30,48 @@ evaluate_model(rc, 'Ridge Classifier', X_train, y_train, 0.3)
 # Fine-tuning model with GridSearch
 print("\nFine tuning model")
 rc = RidgeClassifier()
+
+"""param_grid = [
+    {
+    	'solver': ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg'],
+        'alpha': [0.01, 0.1, 1, 10, 100],
+        'max_iter': [10000],
+    	'tol': [1e-4]
+	},
+	{
+    	'solver': ['sag', 'saga'],
+        'alpha': [0.01, 0.1, 1, 10, 100],
+        'max_iter': [10000],
+    	'tol': [1e-4],
+    	'random_state': [42]
+	},
+	{
+    	'solver': ['lbfgs'],
+        'alpha': [0.01, 0.1, 1, 10, 100],
+        'max_iter': [10000],
+    	'tol': [1e-4],
+        'positive':[True],
+    	'random_state': [42]
+	}
+]
+
+clf_rc = RandomizedSearchCV(rc, param_distributions=param_grid,
+                            cv=5, verbose=True, n_jobs=-1)
+
+best_clf_rc = clf_rc.fit(X_train, y_train.values.ravel())
+clf_performance(best_clf_rc, "Ridge Classifier")"""
+
+"""
+Ridge Classifier - Randomized Search CV best results
+Best Score:	 0.8280898876404494
+Best Parameters:	 {'tol': 0.0001, 'solver': 'sparse_cg', 'max_iter': 10000, 'alpha': 0.01}
+"""
+
 param_grid = {
-    'max_iter':[2000],
-    'solver' : ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']#, 'lbfgs']
+    'solver': ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg'],
+    'alpha': np.arange(0 ,5, 0.01),
+    'max_iter': [10000],
+    'tol': [1e-4]
 }
 clf_rc = GridSearchCV(rc, param_grid=param_grid, cv=5, verbose=True, n_jobs=-1)
 best_clf_rc = clf_rc.fit(X_train, y_train.values.ravel())
@@ -54,7 +94,7 @@ base_submission = pd.DataFrame(data=basic_submission)
 save_data(base_submission, sett.RESULT_DATA_PATH, sett.RC_RESULT_FILENAME, index=False, header=True)
 
 """
-Ridge Classifier
-Best Score:	 0.8247191011235955
-Best Parameters:	 {'max_iter': 2000, 'solver': 'auto'}
+Ridge Classifier - GridSearch best results
+Best Score:	 0.8292134831460676 
+Best Parameters:	 {'alpha': 2.49, 'max_iter': 10000, 'solver': 'sparse_cg', 'tol': 0.0001}
 """
