@@ -31,16 +31,37 @@ evaluate_model(lda, 'Linear Discriminant Analysis', X_train, y_train, 0.3)
 print("\nFine tuning model")
 lda = LinearDiscriminantAnalysis()
 
-"""param_grid = {
-    'solver': ['svd', 'lsqr', 'eigen'],
-    'shrinkage': [None, 'auto', 0.1, 0.3, 0.5, 0.7],
-}
+"""param_grid = [
+    {
+        'solver': ['lsqr', 'eigen'],
+        'shrinkage': [None, 'auto', 0.1, 0.3, 0.5, 0.7],
+     },
+    {
+        'solver': ['svd'],
+        'shrinkage': [None],
+     }
+]
+
 clf_lda = RandomizedSearchCV(lda, param_distributions=param_grid, cv=5, verbose=True, n_jobs=-1)
 best_clf_lda = clf_lda.fit(X_train, y_train.values.ravel())
 clf_performance(best_clf_lda, "Linear Discriminant Analysis")"""
 
-param_grid = {'solver': ['svd', 'lsqr']}#,
-              #'shrinkage': ['auto']}
+"""
+Linear Discriminant Analysis - RandomizedSearchCV results
+Best Score:	 0.8258426966292134
+Best Parameters:	 {'solver': 'svd', 'shrinkage': None}
+"""
+
+param_grid = [
+    {
+        'solver': ['lsqr'],
+        'shrinkage': [None, 'auto', 0.1, 0.3, 0.5, 0.7],
+     },
+    {
+        'solver': ['svd'],
+        'shrinkage': [None],
+     }
+]
 clf_lda = GridSearchCV(lda, param_grid=param_grid, cv=5, verbose=True, n_jobs=-1)
 best_clf_lda = clf_lda.fit(X_train, y_train.values.ravel())
 clf_performance(best_clf_lda, "Linear Discriminant Analysis")
@@ -63,7 +84,7 @@ save_data(base_submission, sett.RESULT_DATA_PATH, sett.LDA_RESULT_FILENAME,
           index=False, header=True)
 
 """
-Linear Discriminant Analysis
-Best Score:	 0.8269662921348315
-Best Parameters:	 {'shrinkage': None, 'solver': 'svd'}
+Linear Discriminant Analysis - GridSearch best results
+Best Score:	 0.8258426966292134
+Best Parameters:	 {'shrinkage': None, 'solver': 'lsqr'}
 """

@@ -31,27 +31,37 @@ evaluate_model(rf, 'Random Forest Classifier', X_train, y_train, 0.3)
 print("\nFine tuning model")
 rf = RandomForestClassifier()
 """param_grid = {
-    'n_estimators': [400,450,500,550],
+    'n_estimators': [200,300,400,500, 600],
     'criterion':['gini','entropy'],
-    'bootstrap': [True],
+    'bootstrap': [True, False],
     'max_depth': [15, 20, 25],
-    'max_features': ['auto','sqrt', 10],
+    'max_features': ['auto','sqrt', 10, 20, 30],
     'min_samples_leaf': [2,3],
-    'min_samples_split': [2,3]
+    'min_samples_split': [2,3],
+    'class_weight': [None, 'balanced', 'balanced_subsample']
 }
-clf_rf = RandomizedSearchCV(rf, param_distributions=param_grid, cv=5, verbose=True, n_jobs=-1)"""
-
+clf_rf = RandomizedSearchCV(rf, param_distributions=param_grid, cv=5, verbose=True, n_jobs=-1)
+best_clf_rf = clf_rf.fit(X_train, y_train.values.ravel())
+clf_performance(best_clf_rf, "Random Forest Classifier")"""
 """
-Best Score:	 0.8337078651685392
-Best Parameters:	 {'n_estimators': 500, 'min_samples_split': 2, 'min_samples_leaf': 3, 'max_features': 'sqrt', 'max_depth': 20, 'criterion': 'entropy', 'bootstrap': True}
+Random Forest Classifier - RandomizedSearchCV results
+Best Score:	 0.8303370786516855
+Best Parameters:	 {'n_estimators': 300, 
+                      'min_samples_split': 3, 
+                      'min_samples_leaf': 3, 
+                      'max_features': 20, 
+                      'max_depth': 15, 
+                      'criterion': 'entropy', 
+                      'class_weight': 'balanced', 
+                      'bootstrap': True}
 """
-param_grid = {'n_estimators': np.arange(490, 500, 1),
+param_grid = {'n_estimators': np.arange(290, 310, 1),
               'criterion':['entropy'],
               'bootstrap': [True],
-              'max_depth': np.arange(20, 25, 1),
-              'max_features': ['sqrt'],
-              'min_samples_leaf': [2,3],
-              'min_samples_split': [2,3]}
+              'max_depth': np.arange(10, 20, 1),
+              'max_features': np.arange(15, 25, 1),
+              'min_samples_leaf': [2, 3],
+              'min_samples_split': [2, 3]}
 clf_rf = GridSearchCV(rf, param_grid=param_grid, cv=5, verbose=True, n_jobs=-1)
 best_clf_rf = clf_rf.fit(X_train, y_train.values.ravel())
 clf_performance(best_clf_rf, "Random Forest Classifier")
@@ -74,9 +84,15 @@ save_data(base_submission, sett.RESULT_DATA_PATH, sett.RF_RESULT_FILENAME,
           index=False, header=True)
 
 """
-Random Forest Classifier
-Best Score:	 0.8337078651685393
-Best Parameters:	 {'bootstrap': True, 'criterion': 'entropy', 'max_depth': 22, 'max_features': 'sqrt', 'min_samples_leaf': 3, 'min_samples_split': 3, 'n_estimators': 493}
+Random Forest Classifier - GridSearch best results
+Best Score:	 0.8359550561797754
+Best Parameters:	 {'bootstrap': True, 
+                      'criterion': 'entropy', 
+                      'max_depth': 12, 
+                      'max_features': 24, 
+                      'min_samples_leaf': 2, 
+                      'min_samples_split': 2, 
+                      'n_estimators': 303}
 """
 
 

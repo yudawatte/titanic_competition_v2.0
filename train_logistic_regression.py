@@ -4,7 +4,9 @@ Fit Logistic Regression model on the preprocessed data
 from sklearn.linear_model import LogisticRegression
 from helper import read_data, save_data, save_model
 from settings import Settings
-from model_evaluator import evaluate_model
+from model_evaluator import evaluate_model, clf_performance
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+import numpy as np
 import pandas as pd
 
 # Read preprocessed data
@@ -25,15 +27,92 @@ lr = LogisticRegression()
 print("\nEvaluate model")
 evaluate_model(lr, 'Logistic Regression', X_train, y_train, 0.3)
 
-# Train the model on test set
-lr.fit(X_train, y_train.values.ravel())
+# Fine-tuning model with RandomizedSearchCV
+print("\nFine tuning model")
+lr = LogisticRegression()
+
+"""param_grid = [
+    {
+    	'solver': ['newton-cg', 'lbfgs', 'sag'],
+    	'penalty':['l2', 'none'],
+    	'tol': [1e-4],
+        'max_iter': [10000],
+    	'C': [0.01, 0.1, 1, 10, 100],
+    	'random_state': [42],
+    	'multi_class': ['auto', 'ovr'],
+    	'n_jobs': [-1]
+	},
+	{
+    	'solver': ['liblinear'],
+    	'penalty':['l1', 'l2'],
+    	'tol': [1e-4],
+        'max_iter': [10000],
+    	'C': [0.01, 0.1, 1, 10, 100],
+    	'random_state': [42],
+    	'multi_class': ['auto', 'ovr'],
+    	'n_jobs': [-1]
+	},
+	{
+    	'solver': ['saga'],
+    	'penalty':['l1', 'l2', 'none'],
+    	'tol': [1e-4],
+        'max_iter': [10000],
+    	'C': [0.01, 0.1, 1, 10, 100],
+    	'random_state': [42],
+    	'multi_class': ['auto', 'ovr'],
+    	'n_jobs': [-1]
+	},
+	{
+    	'solver': ['saga'],
+    	'penalty':['elasticnet'],
+    	'tol': [1e-4],
+        'max_iter': [10000],
+    	'C': [0.01, 0.1, 1, 10, 100],
+    	'random_state': [42],
+    	'multi_class': ['auto', 'ovr'],
+    	'n_jobs': [-1],
+	    'l1_ratio': [0, 0.2, 0.5, 0.7, 1]
+	}
+]
+
+clf_lr = RandomizedSearchCV(lr, param_distributions=param_grid,
+                            cv=5, verbose=True, n_jobs=-1)
+
+best_clf_lr = clf_lr.fit(X_train, y_train.values.ravel())
+clf_performance(best_clf_lr, "Logistic Regression")"""
+
+"""
+Logistic Regression - Randomized Search CV best results
+Best Score:	 0.8269662921348315
+Best Parameters:	 {'tol': 0.0001, 
+                      'solver': 'newton-cg', 
+                      'random_state': 42, 
+                      'penalty': 'l2', 
+                      'n_jobs': -1, 
+                      'multi_class': 'auto', 
+                      'max_iter': 10000, 
+                      'C': 1}
+"""
+
+param_grid = {'solver': ['newton-cg', 'lbfgs', 'sag'],
+              'tol': [1e-4],
+              'penalty':['l2'],
+              'max_iter': [10000],
+              'C': np.arange(0.1, 2.5, 0.1),
+              'random_state': [42],
+              'multi_class': ['auto', 'ovr'],
+              'n_jobs': [-1]
+              }
+clf_lr = GridSearchCV(lr, param_grid=param_grid, cv=5, verbose=True, n_jobs=-1)
+best_clf_lr = clf_lr.fit(X_train, y_train.values.ravel())
+clf_performance(best_clf_lr, "Logistic Regression")
 
 # Predict on test set
-predict = lr.predict(X_test)
+predict = best_clf_lr.predict(X_test)
 
 # Saving the model
 print("\nSavning Model")
-save_model(lr, sett.LR_MODEL_NAME)
+save_model(best_clf_lr, sett.LR_MODEL_NAME)
 
 # Save submit results
 print("\nSaving submit results")
@@ -42,10 +121,18 @@ print(X_test_org.shape)
 print(predict.shape)
 basic_submission = {'PassengerId': X_test_org.PassengerId, 'Survived': predict}
 base_submission = pd.DataFrame(data=basic_submission)
-save_data(base_submission, sett.RESULT_DATA_PATH, sett.LR_RESULT_FILENAME, index=False, header=True)
+save_data(base_submission, sett.RESULT_DATA_PATH, sett.LR_RESULT_FILENAME,
+          index=False, header=True)
 
 """
-Logistic Regression
-Accuracy:  81.27
-Mean Cross Validated Score:  82.7
+Logistic Regression - GridSearch best results
+Best Score:	 0.8292134831460674
+Best Parameters:	 {'C': 0.4, 
+                      'max_iter': 10000, 
+                      'multi_class': 'auto', 
+                      'n_jobs': -1, 
+                      'penalty': 'l2', 
+                      'random_state': 42, 
+                      'solver': 'newton-cg', 
+                      'tol': 0.0001}
 """
